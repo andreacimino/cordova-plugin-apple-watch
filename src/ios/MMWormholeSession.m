@@ -86,7 +86,25 @@
 
 #pragma mark - WCSessionDelegate Methods
 
-- (void)session:(nonnull WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
+- (void) session:(WCSession *) session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message replyHandler:(nonnull void (^)(NSDictionary<NSString *,id> * _Nonnull))replyHandler {
+    for (NSString *identifier in message.allKeys) {
+        NSData *data = message[identifier];
+        id messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        
+        [self notifyListenerForMessageWithIdentifier:identifier message:messageObject];
+    }}
+
+
+- (void) session:(WCSession *)session didReceiveMessageData:(NSData *)messageData replyHandler:(void (^)(NSData * _Nonnull))replyHandler {
+    NSLog(@"The code runs through here!");
+    
+    id messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:messageData];
+    
+    [self notifyListenerForMessageWithIdentifier:@"main" message:messageObject];
+    
+}
+  - (void)session:(nonnull WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
+NSLog(@"The code runs through here!");
     for (NSString *identifier in message.allKeys) {
         NSData *data = message[identifier];
         id messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -96,6 +114,7 @@
 }
 
 - (void)session:(WCSession *)session didReceiveApplicationContext:(NSDictionary<NSString *, id> *)applicationContext {
+NSLog(@"The code runs through here!");
     for (NSString *identifier in applicationContext.allKeys) {
         NSData *data = applicationContext[identifier];
         id messageObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -131,5 +150,17 @@
     }
 }
 
-@end
+- (void)session:(nonnull WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(nullable NSError *)error {
+NSLog(@"The code runs through here!");
+}
 
+
+- (void)sessionDidBecomeInactive:(nonnull WCSession *)session {
+NSLog(@"The code runs through here!");}
+
+
+- (void)sessionDidDeactivate:(nonnull WCSession *)session {
+NSLog(@"The code runs through here!");
+}
+
+@end

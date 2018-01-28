@@ -49,6 +49,10 @@
         return NO;
     }
     
+    if ([WCSession isSupported] == false) {
+        return NO;
+    }
+    
     if (messageObject) {
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:messageObject];
         
@@ -56,25 +60,44 @@
             return NO;
         }
         
-        if ([self.session isReachable]) {
-            NSString *tempDir = [self messagePassingDirectoryPath];
-            
-            if (tempDir == nil) {
-                tempDir = NSTemporaryDirectory();
-            }
-            
-            NSString *tempPath = [tempDir stringByAppendingPathComponent:identifier];
-            NSURL *tempURL = [NSURL fileURLWithPath:tempPath];
-            
-            NSError *fileError = nil;
-            
-            [data writeToURL:tempURL options:NSDataWritingAtomic error:&fileError];
-            
-            [self.session transferFile:tempURL metadata:@{@"identifier" : identifier}];
+        NSString *tempDir = [self messagePassingDirectoryPath];
+        
+        if (tempDir == nil) {
+            tempDir = NSTemporaryDirectory();
         }
+        
+        NSString *tempPath = [tempDir stringByAppendingPathComponent:identifier];
+        NSURL *tempURL = [NSURL fileURLWithPath:tempPath];
+        
+        NSError *fileError = nil;
+        
+        [data writeToURL:tempURL options:NSDataWritingAtomic error:&fileError];
+        
+        [self.session transferFile:tempURL metadata:@{@"identifier" : identifier}];
     }
     
     return NO;
+}
+
+- (void)deleteContentForAllMessages {
+    
+}
+
+
+- (void)deleteContentForIdentifier:(nullable NSString *)identifier {
+    
+}
+
+- (void)session:(nonnull WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(nullable NSError *)error {
+    
+}
+
+- (void)sessionDidBecomeInactive:(nonnull WCSession *)session {
+    
+}
+
+- (void)sessionDidDeactivate:(nonnull WCSession *)session {
+    
 }
 
 @end
